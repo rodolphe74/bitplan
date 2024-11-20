@@ -5,3 +5,6 @@ Displaying modern image formats on Atari ST.
 
 
  <img src="hicolor.jpg" width="400"> &nbsp; <img src="loading.gif" width="400">
+
+# compilation
+Using (Docker Image)[https://www.fxjavadevblog.fr/atari-st-c-compiler-avec-docker/].
