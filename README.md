@@ -1,4 +1,4 @@
 # bitplan
-Displaying modern image formats on Atari ST
+Displaying modern image formats on Atari ST.
 
- <img src="images/atari_lowres.svg"> 
+ <img src="images/bitplanes.svg" height="300"> 
