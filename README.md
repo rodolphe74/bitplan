@@ -14,3 +14,5 @@ docker pull fxrobin/m68k-compiler
 docker run --platform linux/amd64 -it -v $(pwd):/app fxrobin/m68k-compiler bash
 make
 ```
+Then create a GEMDOS drive to the git folder under Hatari.\\
+Git folder should be available under drive C.
