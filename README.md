@@ -1,5 +1,6 @@
 # bitplan
-Displaying modern image formats on Atari ST.
+Displaying modern image formats on Atari ST.<br/>
+Allow to load and convert what [stb](https://github.com/nothings/stb) load on an Atari ST.<br/>
 
  <img src="images/bitplanes.svg" height="300"> 
 
