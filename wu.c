@@ -30,13 +30,13 @@
 #define BLUE 0
 
 struct box {
-    int r0; /* min value, exclusive */
-    int r1; /* max value, inclusive */
-    int g0;
-    int g1;
-    int b0;
-    int b1;
-    int vol;
+  int r0; /* min value, exclusive */
+  int r1; /* max value, inclusive */
+  int g0;
+  int g1;
+  int b0;
+  int b1;
+  int vol;
 };
 
 /* Histogram is in elements 1..HISTSIZE along each axis,
@@ -55,32 +55,32 @@ void Hist3d(long int *vwt, long int *vmr, long int *vmg, long int *vmb,
             float *m2)
 /* build 3-D color histogram of counts, r/g/b, c^2 */
 {
-    register int ind, r, g, b;
-    int inr, ing, inb, table[256];
-    register long int i;
+  register int ind, r, g, b;
+  int inr, ing, inb, table[256];
+  register long int i;
 
-    for (i = 0; i < 256; ++i)
-        table[i] = i * i;
-    Qadd = (unsigned short int *)malloc(sizeof(short int) * size);
-    if (Qadd == NULL) {
-        printf("Not enough space\n");
-        exit(1);
-    }
-    for (i = 0; i < size; ++i) {
-        r = Ir[i];
-        g = Ig[i];
-        b = Ib[i];
-        inr = (r >> 3) + 1;
-        ing = (g >> 3) + 1;
-        inb = (b >> 3) + 1;
-        Qadd[i] = ind = (inr << 10) + (inr << 6) + inr + (ing << 5) + ing + inb;
-        /*[inr][ing][inb]*/
-        ++vwt[ind];
-        vmr[ind] += r;
-        vmg[ind] += g;
-        vmb[ind] += b;
-        m2[ind] += (float)(table[r] + table[g] + table[b]);
-    }
+  for (i = 0; i < 256; ++i)
+    table[i] = i * i;
+  Qadd = (unsigned short int *)malloc(sizeof(short int) * size);
+  if (Qadd == NULL) {
+    printf("Not enough space\n");
+    exit(1);
+  }
+  for (i = 0; i < size; ++i) {
+    r = Ir[i];
+    g = Ig[i];
+    b = Ib[i];
+    inr = (r >> 3) + 1;
+    ing = (g >> 3) + 1;
+    inb = (b >> 3) + 1;
+    Qadd[i] = ind = (inr << 10) + (inr << 6) + inr + (ing << 5) + ing + inb;
+    /*[inr][ing][inb]*/
+    ++vwt[ind];
+    vmr[ind] += r;
+    vmg[ind] += g;
+    vmb[ind] += b;
+    m2[ind] += (float)(table[r] + table[g] + table[b]);
+  }
 }
 
 /* At conclusion of the histogram step, we can interpret
@@ -97,52 +97,47 @@ void Hist3d(long int *vwt, long int *vmr, long int *vmg, long int *vmb,
 void M3d(long int *vwt, long int *vmr, long int *vmg, long int *vmb,
          float *m2) /* compute cumulative moments. */
 {
-    register unsigned short int ind1, ind2;
-    register unsigned char i, r, g, b;
-    long int line, line_r, line_g, line_b, area[33], area_r[33], area_g[33],
-        area_b[33];
-    float line2, area2[33];
+  register unsigned short int ind1, ind2;
+  register unsigned char i, r, g, b;
+  long int line, line_r, line_g, line_b, area[33], area_r[33], area_g[33],
+      area_b[33];
+  float line2, area2[33];
 
-    for (r = 1; r <= 32; ++r) {
-        for (i = 0; i <= 32; ++i)
-            area2[i] = area[i] = area_r[i] = area_g[i] = area_b[i] = 0;
-        for (g = 1; g <= 32; ++g) {
-            line2 = line = line_r = line_g = line_b = 0;
-            for (b = 1; b <= 32; ++b) {
-                ind1 =
-                    (r << 10) + (r << 6) + r + (g << 5) + g + b; /* [r][g][b] */
-                line += vwt[ind1];
-                line_r += vmr[ind1];
-                line_g += vmg[ind1];
-                line_b += vmb[ind1];
-                line2 += m2[ind1];
-                area[b] += line;
-                area_r[b] += line_r;
-                area_g[b] += line_g;
-                area_b[b] += line_b;
-                area2[b] += line2;
-                ind2 = ind1 - 1089; /* [r-1][g][b] */
-                vwt[ind1] = vwt[ind2] + area[b];
-                vmr[ind1] = vmr[ind2] + area_r[b];
-                vmg[ind1] = vmg[ind2] + area_g[b];
-                vmb[ind1] = vmb[ind2] + area_b[b];
-                m2[ind1] = m2[ind2] + area2[b];
-            }
-        }
+  for (r = 1; r <= 32; ++r) {
+    for (i = 0; i <= 32; ++i)
+      area2[i] = area[i] = area_r[i] = area_g[i] = area_b[i] = 0;
+    for (g = 1; g <= 32; ++g) {
+      line2 = line = line_r = line_g = line_b = 0;
+      for (b = 1; b <= 32; ++b) {
+        ind1 = (r << 10) + (r << 6) + r + (g << 5) + g + b; /* [r][g][b] */
+        line += vwt[ind1];
+        line_r += vmr[ind1];
+        line_g += vmg[ind1];
+        line_b += vmb[ind1];
+        line2 += m2[ind1];
+        area[b] += line;
+        area_r[b] += line_r;
+        area_g[b] += line_g;
+        area_b[b] += line_b;
+        area2[b] += line2;
+        ind2 = ind1 - 1089; /* [r-1][g][b] */
+        vwt[ind1] = vwt[ind2] + area[b];
+        vmr[ind1] = vmr[ind2] + area_r[b];
+        vmg[ind1] = vmg[ind2] + area_g[b];
+        vmb[ind1] = vmb[ind2] + area_b[b];
+        m2[ind1] = m2[ind2] + area2[b];
+      }
     }
+  }
 }
 
 long int Vol(struct box *cube, long int mmt[33][33][33])
 /* Compute sum over a box of any given statistic */
 {
-    return mmt[cube->r1][cube->g1][cube->b1] -
-           mmt[cube->r1][cube->g1][cube->b0] -
-           mmt[cube->r1][cube->g0][cube->b1] +
-           mmt[cube->r1][cube->g0][cube->b0] -
-           mmt[cube->r0][cube->g1][cube->b1] +
-           mmt[cube->r0][cube->g1][cube->b0] +
-           mmt[cube->r0][cube->g0][cube->b1] -
-           mmt[cube->r0][cube->g0][cube->b0];
+  return mmt[cube->r1][cube->g1][cube->b1] - mmt[cube->r1][cube->g1][cube->b0] -
+         mmt[cube->r1][cube->g0][cube->b1] + mmt[cube->r1][cube->g0][cube->b0] -
+         mmt[cube->r0][cube->g1][cube->b1] + mmt[cube->r0][cube->g1][cube->b0] +
+         mmt[cube->r0][cube->g0][cube->b1] - mmt[cube->r0][cube->g0][cube->b0];
 }
 
 /* The next two routines allow a slightly more efficient calculation
@@ -154,26 +149,26 @@ long int Bottom(struct box *cube, unsigned char dir, long int mmt[33][33][33])
 /* Compute part of Vol(cube, mmt) that doesn't depend on r1, g1, or b1 */
 /* (depending on dir) */
 {
-    switch (dir) {
-    case RED:
-        return -mmt[cube->r0][cube->g1][cube->b1] +
-               mmt[cube->r0][cube->g1][cube->b0] +
-               mmt[cube->r0][cube->g0][cube->b1] -
-               mmt[cube->r0][cube->g0][cube->b0];
-        break;
-    case GREEN:
-        return -mmt[cube->r1][cube->g0][cube->b1] +
-               mmt[cube->r1][cube->g0][cube->b0] +
-               mmt[cube->r0][cube->g0][cube->b1] -
-               mmt[cube->r0][cube->g0][cube->b0];
-        break;
-    case BLUE:
-        return -mmt[cube->r1][cube->g1][cube->b0] +
-               mmt[cube->r1][cube->g0][cube->b0] +
-               mmt[cube->r0][cube->g1][cube->b0] -
-               mmt[cube->r0][cube->g0][cube->b0];
-        break;
-    }
+  switch (dir) {
+  case RED:
+    return -mmt[cube->r0][cube->g1][cube->b1] +
+           mmt[cube->r0][cube->g1][cube->b0] +
+           mmt[cube->r0][cube->g0][cube->b1] -
+           mmt[cube->r0][cube->g0][cube->b0];
+    break;
+  case GREEN:
+    return -mmt[cube->r1][cube->g0][cube->b1] +
+           mmt[cube->r1][cube->g0][cube->b0] +
+           mmt[cube->r0][cube->g0][cube->b1] -
+           mmt[cube->r0][cube->g0][cube->b0];
+    break;
+  case BLUE:
+    return -mmt[cube->r1][cube->g1][cube->b0] +
+           mmt[cube->r1][cube->g0][cube->b0] +
+           mmt[cube->r0][cube->g1][cube->b0] -
+           mmt[cube->r0][cube->g0][cube->b0];
+    break;
+  }
 }
 
 long int Top(struct box *cube, unsigned char dir, int pos,
@@ -181,36 +176,36 @@ long int Top(struct box *cube, unsigned char dir, int pos,
 /* Compute remainder of Vol(cube, mmt), substituting pos for */
 /* r1, g1, or b1 (depending on dir) */
 {
-    switch (dir) {
-    case RED:
-        return mmt[pos][cube->g1][cube->b1] - mmt[pos][cube->g1][cube->b0] -
-               mmt[pos][cube->g0][cube->b1] + mmt[pos][cube->g0][cube->b0];
-        break;
-    case GREEN:
-        return mmt[cube->r1][pos][cube->b1] - mmt[cube->r1][pos][cube->b0] -
-               mmt[cube->r0][pos][cube->b1] + mmt[cube->r0][pos][cube->b0];
-        break;
-    case BLUE:
-        return mmt[cube->r1][cube->g1][pos] - mmt[cube->r1][cube->g0][pos] -
-               mmt[cube->r0][cube->g1][pos] + mmt[cube->r0][cube->g0][pos];
-        break;
-    }
+  switch (dir) {
+  case RED:
+    return mmt[pos][cube->g1][cube->b1] - mmt[pos][cube->g1][cube->b0] -
+           mmt[pos][cube->g0][cube->b1] + mmt[pos][cube->g0][cube->b0];
+    break;
+  case GREEN:
+    return mmt[cube->r1][pos][cube->b1] - mmt[cube->r1][pos][cube->b0] -
+           mmt[cube->r0][pos][cube->b1] + mmt[cube->r0][pos][cube->b0];
+    break;
+  case BLUE:
+    return mmt[cube->r1][cube->g1][pos] - mmt[cube->r1][cube->g0][pos] -
+           mmt[cube->r0][cube->g1][pos] + mmt[cube->r0][cube->g0][pos];
+    break;
+  }
 }
 
 /* Compute the weighted variance of a box */
 /* NB: as with the raw statistics, this is really the variance * size */
 float Var(struct box *cube) {
-    float dr, dg, db, xx;
+  float dr, dg, db, xx;
 
-    dr = Vol(cube, mr);
-    dg = Vol(cube, mg);
-    db = Vol(cube, mb);
-    xx = m2[cube->r1][cube->g1][cube->b1] - m2[cube->r1][cube->g1][cube->b0] -
-         m2[cube->r1][cube->g0][cube->b1] + m2[cube->r1][cube->g0][cube->b0] -
-         m2[cube->r0][cube->g1][cube->b1] + m2[cube->r0][cube->g1][cube->b0] +
-         m2[cube->r0][cube->g0][cube->b1] - m2[cube->r0][cube->g0][cube->b0];
+  dr = Vol(cube, mr);
+  dg = Vol(cube, mg);
+  db = Vol(cube, mb);
+  xx = m2[cube->r1][cube->g1][cube->b1] - m2[cube->r1][cube->g1][cube->b0] -
+       m2[cube->r1][cube->g0][cube->b1] + m2[cube->r1][cube->g0][cube->b0] -
+       m2[cube->r0][cube->g1][cube->b1] + m2[cube->r0][cube->g1][cube->b0] +
+       m2[cube->r0][cube->g0][cube->b1] - m2[cube->r0][cube->g0][cube->b0];
 
-    return xx - (dr * dr + dg * dg + db * db) / (float)Vol(cube, wt);
+  return xx - (dr * dr + dg * dg + db * db) / (float)Vol(cube, wt);
 }
 
 /* We want to minimize the sum of the variances of two subboxes.
@@ -222,218 +217,218 @@ float Var(struct box *cube) {
 float Maximize(struct box *cube, unsigned char dir, int first, int last,
                int *cut, long int whole_r, long int whole_g, long int whole_b,
                long int whole_w) {
-    register long int half_r, half_g, half_b, half_w;
-    long int base_r, base_g, base_b, base_w;
-    register int i;
-    register float temp, max;
+  register long int half_r, half_g, half_b, half_w;
+  long int base_r, base_g, base_b, base_w;
+  register int i;
+  register float temp, max;
 
-    base_r = Bottom(cube, dir, mr);
-    base_g = Bottom(cube, dir, mg);
-    base_b = Bottom(cube, dir, mb);
-    base_w = Bottom(cube, dir, wt);
-    max = 0.0;
-    *cut = -1;
-    for (i = first; i < last; ++i) {
-        half_r = base_r + Top(cube, dir, i, mr);
-        half_g = base_g + Top(cube, dir, i, mg);
-        half_b = base_b + Top(cube, dir, i, mb);
-        half_w = base_w + Top(cube, dir, i, wt);
-        /* now half_x is sum over lower half of box, if split at i */
-        if (half_w == 0) /* subbox could be empty of pixels! */
-            continue;    /* never split into an empty box */
-        else
-            temp = ((float)half_r * half_r + (float)half_g * half_g +
-                    (float)half_b * half_b) /
-                   half_w;
+  base_r = Bottom(cube, dir, mr);
+  base_g = Bottom(cube, dir, mg);
+  base_b = Bottom(cube, dir, mb);
+  base_w = Bottom(cube, dir, wt);
+  max = 0.0;
+  *cut = -1;
+  for (i = first; i < last; ++i) {
+    half_r = base_r + Top(cube, dir, i, mr);
+    half_g = base_g + Top(cube, dir, i, mg);
+    half_b = base_b + Top(cube, dir, i, mb);
+    half_w = base_w + Top(cube, dir, i, wt);
+    /* now half_x is sum over lower half of box, if split at i */
+    if (half_w == 0) /* subbox could be empty of pixels! */
+      continue;      /* never split into an empty box */
+    else
+      temp = ((float)half_r * half_r + (float)half_g * half_g +
+              (float)half_b * half_b) /
+             half_w;
 
-        half_r = whole_r - half_r;
-        half_g = whole_g - half_g;
-        half_b = whole_b - half_b;
-        half_w = whole_w - half_w;
-        if (half_w == 0) /* subbox could be empty of pixels! */
-            continue;    /* never split into an empty box */
-        else
-            temp += ((float)half_r * half_r + (float)half_g * half_g +
-                     (float)half_b * half_b) /
-                    half_w;
+    half_r = whole_r - half_r;
+    half_g = whole_g - half_g;
+    half_b = whole_b - half_b;
+    half_w = whole_w - half_w;
+    if (half_w == 0) /* subbox could be empty of pixels! */
+      continue;      /* never split into an empty box */
+    else
+      temp += ((float)half_r * half_r + (float)half_g * half_g +
+               (float)half_b * half_b) /
+              half_w;
 
-        if (temp > max) {
-            max = temp;
-            *cut = i;
-        }
+    if (temp > max) {
+      max = temp;
+      *cut = i;
     }
-    return max;
+  }
+  return max;
 }
 
 int Cut(struct box *set1, struct box *set2) {
-    unsigned char dir;
-    int cutr, cutg, cutb;
-    float maxr, maxg, maxb;
-    long int whole_r, whole_g, whole_b, whole_w;
+  unsigned char dir;
+  int cutr, cutg, cutb;
+  float maxr, maxg, maxb;
+  long int whole_r, whole_g, whole_b, whole_w;
 
-    whole_r = Vol(set1, mr);
-    whole_g = Vol(set1, mg);
-    whole_b = Vol(set1, mb);
-    whole_w = Vol(set1, wt);
+  whole_r = Vol(set1, mr);
+  whole_g = Vol(set1, mg);
+  whole_b = Vol(set1, mb);
+  whole_w = Vol(set1, wt);
 
-    maxr = Maximize(set1, RED, set1->r0 + 1, set1->r1, &cutr, whole_r, whole_g,
-                    whole_b, whole_w);
-    maxg = Maximize(set1, GREEN, set1->g0 + 1, set1->g1, &cutg, whole_r,
-                    whole_g, whole_b, whole_w);
-    maxb = Maximize(set1, BLUE, set1->b0 + 1, set1->b1, &cutb, whole_r, whole_g,
-                    whole_b, whole_w);
+  maxr = Maximize(set1, RED, set1->r0 + 1, set1->r1, &cutr, whole_r, whole_g,
+                  whole_b, whole_w);
+  maxg = Maximize(set1, GREEN, set1->g0 + 1, set1->g1, &cutg, whole_r, whole_g,
+                  whole_b, whole_w);
+  maxb = Maximize(set1, BLUE, set1->b0 + 1, set1->b1, &cutb, whole_r, whole_g,
+                  whole_b, whole_w);
 
-    if ((maxr >= maxg) && (maxr >= maxb)) {
-        dir = RED;
-        if (cutr < 0)
-            return 0; /* can't split the box */
-    } else if ((maxg >= maxr) && (maxg >= maxb)) {
-        dir = GREEN;
-    } else {
-        dir = BLUE;
-    }
+  if ((maxr >= maxg) && (maxr >= maxb)) {
+    dir = RED;
+    if (cutr < 0)
+      return 0; /* can't split the box */
+  } else if ((maxg >= maxr) && (maxg >= maxb)) {
+    dir = GREEN;
+  } else {
+    dir = BLUE;
+  }
 
-    set2->r1 = set1->r1;
-    set2->g1 = set1->g1;
-    set2->b1 = set1->b1;
+  set2->r1 = set1->r1;
+  set2->g1 = set1->g1;
+  set2->b1 = set1->b1;
 
-    switch (dir) {
-    case RED:
-        set2->r0 = set1->r1 = cutr;
-        set2->g0 = set1->g0;
-        set2->b0 = set1->b0;
-        break;
-    case GREEN:
-        set2->g0 = set1->g1 = cutg;
-        set2->r0 = set1->r0;
-        set2->b0 = set1->b0;
-        break;
-    case BLUE:
-        set2->b0 = set1->b1 = cutb;
-        set2->r0 = set1->r0;
-        set2->g0 = set1->g0;
-        break;
-    }
-    set1->vol =
-        (set1->r1 - set1->r0) * (set1->g1 - set1->g0) * (set1->b1 - set1->b0);
-    set2->vol =
-        (set2->r1 - set2->r0) * (set2->g1 - set2->g0) * (set2->b1 - set2->b0);
-    return 1;
+  switch (dir) {
+  case RED:
+    set2->r0 = set1->r1 = cutr;
+    set2->g0 = set1->g0;
+    set2->b0 = set1->b0;
+    break;
+  case GREEN:
+    set2->g0 = set1->g1 = cutg;
+    set2->r0 = set1->r0;
+    set2->b0 = set1->b0;
+    break;
+  case BLUE:
+    set2->b0 = set1->b1 = cutb;
+    set2->r0 = set1->r0;
+    set2->g0 = set1->g0;
+    break;
+  }
+  set1->vol =
+      (set1->r1 - set1->r0) * (set1->g1 - set1->g0) * (set1->b1 - set1->b0);
+  set2->vol =
+      (set2->r1 - set2->r0) * (set2->g1 - set2->g0) * (set2->b1 - set2->b0);
+  return 1;
 }
 
 void Mark(struct box *cube, int label, unsigned char *tag) {
-    register int r, g, b;
+  register int r, g, b;
 
-    for (r = cube->r0 + 1; r <= cube->r1; ++r)
-        for (g = cube->g0 + 1; g <= cube->g1; ++g)
-            for (b = cube->b0 + 1; b <= cube->b1; ++b)
-                tag[(r << 10) + (r << 6) + r + (g << 5) + g + b] = label;
+  for (r = cube->r0 + 1; r <= cube->r1; ++r)
+    for (g = cube->g0 + 1; g <= cube->g1; ++g)
+      for (b = cube->b0 + 1; b <= cube->b1; ++b)
+        tag[(r << 10) + (r << 6) + r + (g << 5) + g + b] = label;
 }
 
 void guess_palette_wu(uint8_t *image, int w, int h, int c, uint32_t *pal,
                       int palSize) {
-    struct box cube[MAXCOLOR];
-    unsigned char *tag;
-    unsigned char lut_r[MAXCOLOR], lut_g[MAXCOLOR], lut_b[MAXCOLOR];
-    int next;
-    register long int i, weight;
-    register int k;
-    float vv[MAXCOLOR], temp;
+  struct box cube[MAXCOLOR];
+  unsigned char *tag;
+  unsigned char lut_r[MAXCOLOR], lut_g[MAXCOLOR], lut_b[MAXCOLOR];
+  int next;
+  register long int i, weight;
+  register int k;
+  float vv[MAXCOLOR], temp;
 
-    /* input R,G,B components into Ir, Ig, Ib;
-     * set size to width*height */
-    size = w * h;
-    Ir = malloc(sizeof(unsigned char) * size);
-    Ib = malloc(sizeof(unsigned char) * size);
-    Ig = malloc(sizeof(unsigned char) * size);
-    int count = 0;
+  /* input R,G,B components into Ir, Ig, Ib;
+   * set size to width*height */
+  size = w * h;
+  Ir = malloc(sizeof(unsigned char) * size);
+  Ib = malloc(sizeof(unsigned char) * size);
+  Ig = malloc(sizeof(unsigned char) * size);
+  int count = 0;
 
-    for (short y = 0; y < h; y++) {
-        for (short x = 0; x < w; x++) {
-            Ir[count] = image[y * w * c + x * c];
-            Ig[count] = image[y * w * c + x * c + 1];
-            Ib[count] = image[y * w * c + x * c + 2];
-            count++;
-        }
+  for (short y = 0; y < h; y++) {
+    for (short x = 0; x < w; x++) {
+      Ir[count] = image[y * w * c + x * c];
+      Ig[count] = image[y * w * c + x * c + 1];
+      Ib[count] = image[y * w * c + x * c + 2];
+      count++;
     }
+  }
 
-    // printf("no. of colors:\n");
-    // scanf("%d", &K);
-    K = palSize;
+  // printf("no. of colors:\n");
+  // scanf("%d", &K);
+  K = palSize;
 
-    Hist3d((long int *)wt, (long int *)mr, (long int *)mg, (long int *)mb,
-           (float *)m2); /* printf("Histogram done\n"); */
-    free(Ig);
-    free(Ib);
-    free(Ir);
+  Hist3d((long int *)wt, (long int *)mr, (long int *)mg, (long int *)mb,
+         (float *)m2); /* printf("Histogram done\n"); */
+  free(Ig);
+  free(Ib);
+  free(Ir);
 
-    M3d((long int *)wt, (long int *)mr, (long int *)mg, (long int *)mb,
-        (float *)m2); /* printf("Moments done\n"); */
+  M3d((long int *)wt, (long int *)mr, (long int *)mg, (long int *)mb,
+      (float *)m2); /* printf("Moments done\n"); */
 
-    cube[0].r0 = cube[0].g0 = cube[0].b0 = 0;
-    cube[0].r1 = cube[0].g1 = cube[0].b1 = 32;
+  cube[0].r0 = cube[0].g0 = cube[0].b0 = 0;
+  cube[0].r1 = cube[0].g1 = cube[0].b1 = 32;
+  next = 0;
+  for (i = 1; i < K; ++i) {
+    if (Cut(&cube[next], &cube[i])) {
+      /* volume test ensures we won't try to cut one-cell box */
+      vv[next] = (cube[next].vol > 1) ? Var(&cube[next]) : 0.0;
+      vv[i] = (cube[i].vol > 1) ? Var(&cube[i]) : 0.0;
+    } else {
+      vv[next] = 0.0; /* don't try to split this box again */
+      i--;            /* didn't create box i */
+    }
     next = 0;
-    for (i = 1; i < K; ++i) {
-        if (Cut(&cube[next], &cube[i])) {
-            /* volume test ensures we won't try to cut one-cell box */
-            vv[next] = (cube[next].vol > 1) ? Var(&cube[next]) : 0.0;
-            vv[i] = (cube[i].vol > 1) ? Var(&cube[i]) : 0.0;
-        } else {
-            vv[next] = 0.0; /* don't try to split this box again */
-            i--;            /* didn't create box i */
-        }
-        next = 0;
-        temp = vv[0];
-        for (k = 1; k <= i; ++k)
-            if (vv[k] > temp) {
-                temp = vv[k];
-                next = k;
-            }
-        if (temp <= 0.0) {
-            K = i + 1;
-            fprintf(stderr, "Only got %d boxes\n", K);
-            break;
-        }
+    temp = vv[0];
+    for (k = 1; k <= i; ++k)
+      if (vv[k] > temp) {
+        temp = vv[k];
+        next = k;
+      }
+    if (temp <= 0.0) {
+      K = i + 1;
+      fprintf(stderr, "Only got %d boxes\n", K);
+      break;
     }
-    // printf("Partition done\n");
+  }
+  // printf("Partition done\n");
 
-    /* the space for array m2 can be freed now */
+  /* the space for array m2 can be freed now */
 
-    tag = (unsigned char *)malloc(33 * 33 * 33);
-    if (tag == NULL) {
-        printf("Not enough space\n");
-        exit(1);
+  tag = (unsigned char *)malloc(33 * 33 * 33);
+  if (tag == NULL) {
+    printf("Not enough space\n");
+    exit(1);
+  }
+  for (k = 0; k < K; ++k) {
+    Mark(&cube[k], k, tag);
+    weight = Vol(&cube[k], wt);
+    if (weight) {
+      lut_r[k] = Vol(&cube[k], mr) / weight;
+      lut_g[k] = Vol(&cube[k], mg) / weight;
+      lut_b[k] = Vol(&cube[k], mb) / weight;
+    } else {
+      fprintf(stderr, "bogus box %d\n", k);
+      lut_r[k] = lut_g[k] = lut_b[k] = 0;
     }
-    for (k = 0; k < K; ++k) {
-        Mark(&cube[k], k, tag);
-        weight = Vol(&cube[k], wt);
-        if (weight) {
-            lut_r[k] = Vol(&cube[k], mr) / weight;
-            lut_g[k] = Vol(&cube[k], mg) / weight;
-            lut_b[k] = Vol(&cube[k], mb) / weight;
-        } else {
-            fprintf(stderr, "bogus box %d\n", k);
-            lut_r[k] = lut_g[k] = lut_b[k] = 0;
-        }
-    }
+  }
 
-    for (i = 0; i < size; ++i)
-        Qadd[i] = tag[Qadd[i]];
+  for (i = 0; i < size; ++i)
+    Qadd[i] = tag[Qadd[i]];
 
-    /* output lut_r, lut_g, lut_b as color look-up table contents,
-     * Qadd as the quantized image (array of table addresses). */
-    /* for (int l = 0; l < palette_size; l++) { */
-    /* 	palette->colors[l][0] = lut_r[l]; */
-    /* 	palette->colors[l][1] = lut_g[l]; */
-    /* 	palette->colors[l][2] = lut_b[l]; */
-    /* } */
-    /* palette->size = palette_size; */
-    free(tag);
-    free(Qadd);
+  /* output lut_r, lut_g, lut_b as color look-up table contents,
+   * Qadd as the quantized image (array of table addresses). */
+  /* for (int l = 0; l < palette_size; l++) { */
+  /* 	palette->colors[l][0] = lut_r[l]; */
+  /* 	palette->colors[l][1] = lut_g[l]; */
+  /* 	palette->colors[l][2] = lut_b[l]; */
+  /* } */
+  /* palette->size = palette_size; */
+  free(tag);
+  free(Qadd);
 
-    for (int l = 0; l < palSize; l++) {
-        /* printf("%d   %d %d %d\n",l, lut_r[l], lut_g[l], lut_b[l]); */
-        pal[l] = (lut_r[l] << 16) | (lut_g[l] << 8) | lut_b[l];
-    }
-    /* getchar(); */
+  for (int l = 0; l < palSize; l++) {
+    /* printf("%d   %d %d %d\n",l, lut_r[l], lut_g[l], lut_b[l]); */
+    pal[l] = (lut_r[l] << 16) | (lut_g[l] << 8) | lut_b[l];
+  }
+  /* getchar(); */
 }

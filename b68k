@@ -1,0 +1,2 @@
+#!/bin/zsh
+docker run --platform linux/amd64 -it -v $(pwd):/app fxrobin/m68k-compiler bash
