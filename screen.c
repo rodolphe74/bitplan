@@ -60,12 +60,12 @@ static short BAYER_8_8[8 * 8] = {
 static int BAYER_8_8_SIZE[2] = {8, 8};
 
 struct Pixel {
-  uint8_t r;
-  uint8_t g;
-  uint8_t b;
-  uint8_t ra;
-  uint8_t ga;
-  uint8_t ba;
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t ra;
+    uint8_t ga;
+    uint8_t ba;
 };
 typedef struct Pixel Pixel;
 
@@ -76,176 +76,177 @@ int width, height, comps;
 uint8_t *pImage;
 
 uint32_t getTime(char *label) {
-  uint16_t startSec = (start & 31) * 2;
-  uint16_t startMin = (start & 2016) >> 5;
-  uint16_t startHour = (start & 63488) >> 11;
-  uint16_t endSec = (end & 31) * 2;
-  uint16_t endMin = (end & 2016) >> 5;
-  uint16_t endHour = (end & 63488) >> 11;
-  /* printf("%s start:%d   %dh %dm %ds\n", label, start,startHour,
-   * startMin, startSec); */
-  /* printf("%s end:%d  %dh %dm %ds\n", label, end, endHour, endMin,
-   * endSec); */
-  uint32_t sec = ((endHour * 3600 + endMin * 60 + endSec) -
-                  (startHour * 3600 + startMin * 60 + startSec));
-  printf("%s time:%d\n", label, sec);
+    uint16_t startSec = (start & 31) * 2;
+    uint16_t startMin = (start & 2016) >> 5;
+    uint16_t startHour = (start & 63488) >> 11;
+    uint16_t endSec = (end & 31) * 2;
+    uint16_t endMin = (end & 2016) >> 5;
+    uint16_t endHour = (end & 63488) >> 11;
+    /* printf("%s start:%d   %dh %dm %ds\n", label, start,startHour,
+     * startMin, startSec); */
+    /* printf("%s end:%d  %dh %dm %ds\n", label, end, endHour, endMin,
+     * endSec); */
+    uint32_t sec = ((endHour * 3600 + endMin * 60 + endSec) -
+                    (startHour * 3600 + startMin * 60 + startSec));
+    printf("%s time:%d\n", label, sec);
 }
 
 void putPixel(uint16_t x, uint16_t y, uint16_t color) {
-  unsigned short *screenPointer;
-  unsigned short px;
-  uint8_t i, r;
-  unsigned long plans;
-  unsigned short v;
+    unsigned short *screenPointer;
+    unsigned short px;
+    uint8_t i, r;
+    unsigned long plans;
+    unsigned short v;
 
-  screenPointer = (unsigned short *)Physbase();
-  plans = (y * 320L + x) / 16L;
-  screenPointer += ((short)plans * 4);
+    screenPointer = (unsigned short *)Physbase();
+    plans = (y * 320L + x) / 16L;
+    screenPointer += ((short)plans * 4);
 
-  px = x % 16;
-  v = (unsigned short)(power[px]);
+    px = x % 16;
+    v = (unsigned short)(power[px]);
 
-  i = 0;
-  while (color) {
-    r = color % 2;
-    if (r) {
-      *(screenPointer + i) |= v;
-    } else {
-      *(screenPointer + i) &= (~v);
+    i = 0;
+    while (color) {
+        r = color % 2;
+        if (r) {
+            *(screenPointer + i) |= v;
+        } else {
+            *(screenPointer + i) &= (~v);
+        }
+        color /= 2;
+        i++;
     }
-    color /= 2;
-    i++;
-  }
 
-  if (color < 2) {
-    while (i < 4) {
-      *(screenPointer + i) &= (~v);
-      i++;
+    if (color < 2) {
+        while (i < 4) {
+            *(screenPointer + i) &= (~v);
+            i++;
+        }
+    } else if (color < 4) {
+        while (i < 3) {
+            *(screenPointer + i) &= (~v);
+            i++;
+        }
+    } else if (color < 8) {
+        while (i < 1) {
+            *(screenPointer + i) &= (~v);
+            i++;
+        }
     }
-  } else if (color < 4) {
-    while (i < 3) {
-      *(screenPointer + i) &= (~v);
-      i++;
-    }
-  } else if (color < 8) {
-    while (i < 1) {
-      *(screenPointer + i) &= (~v);
-      i++;
-    }
-  }
 }
 
 void getImagePixel(Pixel *p, uint16_t x, uint16_t y) {
-  p->r = pImage[y * width * comps + x * comps];
-  p->g = pImage[y * width * comps + x * comps + 1];
-  p->b = pImage[y * width * comps + x * comps + 2];
-  /* p->ra = (pImage[y * width * comps + x * comps] * 8) / 255; */
-  /* p->ga = (pImage[y * width * comps + x * comps + 1] * 8) / 255; */
-  /* p->ba = (pImage[y * width * comps + x * comps + 2] * 8) / 255;; */
+    p->r = pImage[y * width * comps + x * comps];
+    p->g = pImage[y * width * comps + x * comps + 1];
+    p->b = pImage[y * width * comps + x * comps + 2];
+    /* p->ra = (pImage[y * width * comps + x * comps] * 8) / 255; */
+    /* p->ga = (pImage[y * width * comps + x * comps + 1] * 8) / 255; */
+    /* p->ba = (pImage[y * width * comps + x * comps + 2] * 8) / 255;; */
 }
 
 void get_precalculated_matrix(short *matrix, int *matrix_size,
                               float *pre_calc_matrix) {
-  for (int i = 0; i < matrix_size[1] * matrix_size[0]; i++)
-    pre_calc_matrix[i] = (matrix[i] + 0.0f) / (matrix_size[0] * matrix_size[1]);
+    for (int i = 0; i < matrix_size[1] * matrix_size[0]; i++)
+        pre_calc_matrix[i] =
+            (matrix[i] + 0.0f) / (matrix_size[0] * matrix_size[1]);
 }
 
 uint16_t getColor(short colorIndex) { return Setcolor(colorIndex, -1); }
 
 void savePalette() {
-  for (int i = 0; i < 16; i++) {
-    previousPalette[i] = getColor(i);
-  }
+    for (int i = 0; i < 16; i++) {
+        previousPalette[i] = getColor(i);
+    }
 }
 
 void restorePalette() { Setpalette(previousPalette); }
 
 void findNearestColor(Pixel *p, uint8_t *cp) {
-  uint16_t dr, dg, db;
-  uint8_t r, g, b, pr, pg, pb;
-  uint16_t v = 65535;
-  uint16_t diff;
-  for (int i = 0; i < 16; i++) {
-    r = (atariPalette[i] >> 8) & 7;
-    g = (atariPalette[i] >> 4) & 7;
-    b = (atariPalette[i] >> 0) & 7;
+    uint16_t dr, dg, db;
+    uint8_t r, g, b, pr, pg, pb;
+    uint16_t v = 65535;
+    uint16_t diff;
+    for (int i = 0; i < 16; i++) {
+        r = (atariPalette[i] >> 8) & 7;
+        g = (atariPalette[i] >> 4) & 7;
+        b = (atariPalette[i] >> 0) & 7;
 
-    dr = abs(p->ra - r);
-    dg = abs(p->ga - g);
-    db = abs(p->ba - b);
+        dr = abs(p->ra - r);
+        dg = abs(p->ga - g);
+        db = abs(p->ba - b);
 
-    diff = dr * dr + dg * dg + db * db;
-    if (diff < v) {
-      v = diff;
-      *cp = i;
+        diff = dr * dr + dg * dg + db * db;
+        if (diff < v) {
+            v = diff;
+            *cp = i;
+        }
     }
-  }
 }
 
 void preparePaletteCache() {
-  Pixel p;
-  uint8_t cp;
-  for (int r = 0; r < 8; r++) {
-    for (int g = 0; g < 8; g++) {
-      for (int b = 0; b < 8; b++) {
-        p.ra = r;
-        p.ga = g;
-        p.ba = b;
-        findNearestColor(&p, &cp);
-        paletteCache[r][g][b] = cp;
-        /* printf("%d %d %d - %d= %d\n", r, g, b, cp,
-         * paletteCache[r][g][b]); */
-      }
+    Pixel p;
+    uint8_t cp;
+    for (int r = 0; r < 8; r++) {
+        for (int g = 0; g < 8; g++) {
+            for (int b = 0; b < 8; b++) {
+                p.ra = r;
+                p.ga = g;
+                p.ba = b;
+                findNearestColor(&p, &cp);
+                paletteCache[r][g][b] = cp;
+                /* printf("%d %d %d - %d= %d\n", r, g, b, cp,
+                 * paletteCache[r][g][b]); */
+            }
+        }
     }
-  }
 }
 
 void bubbleSort(uint8_t arr[], int n) {
-  for (int i = 0; i < n - 1; i++) {
-    for (int j = 0; j < n - i - 1; j++) {
-      if (arr[j] > arr[j + 1]) {
-        int temp = arr[j];
-        arr[j] = arr[j + 1];
-        arr[j + 1] = temp;
-      }
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
     }
-  }
 }
 
 void convertToAtariPalette(uint32_t srcPalette[16]) {
-  uint8_t rt = 0, gt = 0, bt = 0;
-  uint8_t rvalues[16], gvalues[16], bvalues[16];
-  for (int i = 0; i < 16; i++) {
-    uint8_t r = (uint8_t)(srcPalette[i] >> 16);
-    uint8_t g = (uint8_t)(srcPalette[i] >> 8);
-    uint8_t b = (uint8_t)(srcPalette[i]);
-    rvalues[i] = r;
-    gvalues[i] = g;
-    bvalues[i] = b;
-    r = (r * 7) / 255;
-    g = (g * 7) / 255;
-    b = (b * 7) / 255;
-    atariPalette[i] = (r << 8) | (g << 4) | b;
-  }
+    uint8_t rt = 0, gt = 0, bt = 0;
+    uint8_t rvalues[16], gvalues[16], bvalues[16];
+    for (int i = 0; i < 16; i++) {
+        uint8_t r = (uint8_t)(srcPalette[i] >> 16);
+        uint8_t g = (uint8_t)(srcPalette[i] >> 8);
+        uint8_t b = (uint8_t)(srcPalette[i]);
+        rvalues[i] = r;
+        gvalues[i] = g;
+        bvalues[i] = b;
+        r = (r * 7) / 255;
+        g = (g * 7) / 255;
+        b = (b * 7) / 255;
+        atariPalette[i] = (r << 8) | (g << 4) | b;
+    }
 
-  bubbleSort(rvalues, 16);
-  bubbleSort(gvalues, 16);
-  bubbleSort(bvalues, 16);
+    bubbleSort(rvalues, 16);
+    bubbleSort(gvalues, 16);
+    bubbleSort(bvalues, 16);
 
-  for (int i = 0; i < 15; i++) {
-    uint8_t diffR = abs(rvalues[i + 1] - rvalues[i]);
-    uint8_t diffG = abs(gvalues[i + 1] - gvalues[i]);
-    uint8_t diffB = abs(bvalues[i + 1] - bvalues[i]);
-    if (diffR > rt)
-      rt = diffR;
-    if (diffG > gt)
-      gt = diffG;
-    if (diffB > bt)
-      bt = diffB;
-  }
-  threshold[0] = rt;
-  threshold[1] = gt;
-  threshold[2] = bt;
+    for (int i = 0; i < 15; i++) {
+        uint8_t diffR = abs(rvalues[i + 1] - rvalues[i]);
+        uint8_t diffG = abs(gvalues[i + 1] - gvalues[i]);
+        uint8_t diffB = abs(bvalues[i + 1] - bvalues[i]);
+        if (diffR > rt)
+            rt = diffR;
+        if (diffG > gt)
+            gt = diffG;
+        if (diffB > bt)
+            bt = diffB;
+    }
+    threshold[0] = rt;
+    threshold[1] = gt;
+    threshold[2] = bt;
 }
 
 /* convert color to linear space, very slow on cpu without fpu */
@@ -260,74 +261,74 @@ void convertToAtariPalette(uint32_t srcPalette[16]) {
 /* } */
 
 void ordered_ditherf(float *matrix, int *matrix_size) {
-  short index_color;
-  float mv;
-  short percent, last_percent;
-  uint8_t r, g, b;
-  Pixel p, q;
-  uint8_t c;
-  short n = matrix_size[0] * matrix_size[1];
-  for (short y = 0; y < height; y++) {
-    for (short x = 0; x < width; x++) {
-      getImagePixel(&p, x, y);
-      mv = matrix[((y % matrix_size[1]) * matrix_size[0]) +
-                  (x % matrix_size[0])];
+    short index_color;
+    float mv;
+    short percent, last_percent;
+    uint8_t r, g, b;
+    Pixel p, q;
+    uint8_t c;
+    short n = matrix_size[0] * matrix_size[1];
+    for (short y = 0; y < height; y++) {
+        for (short x = 0; x < width; x++) {
+            getImagePixel(&p, x, y);
+            mv = matrix[((y % matrix_size[1]) * matrix_size[0]) +
+                        (x % matrix_size[0])];
 
-      q.r = max(min(p.r + mv * threshold[0], 255), 0);
-      q.g = max(min(p.g + mv * threshold[1], 255), 0);
-      q.b = max(min(p.b + mv * threshold[2], 255), 0);
+            q.r = max(min(p.r + mv * threshold[0], 255), 0);
+            q.g = max(min(p.g + mv * threshold[1], 255), 0);
+            q.b = max(min(p.b + mv * threshold[2], 255), 0);
 
-      q.ra = (q.r * 7) / 255;
-      q.ga = (q.g * 7) / 255;
-      q.ba = (q.b * 7) / 255;
-      findNearestColor(&q, &c);
-      if (x < 320 && y < 200)
-        putPixel(x, y, c);
+            q.ra = (q.r * 7) / 255;
+            q.ga = (q.g * 7) / 255;
+            q.ba = (q.b * 7) / 255;
+            findNearestColor(&q, &c);
+            if (x < 320 && y < 200)
+                putPixel(x, y, c);
+        }
     }
-  }
 }
 
 void ordered_dither(short *matrix, int *matrix_size) {
-  short index_color;
-  float map_value;
-  short percent, last_percent;
-  uint8_t r, g, b;
-  float v, w;
-  Pixel p, q;
-  uint8_t c;
-  short n = matrix_size[0] * matrix_size[1];
-  short mv, mvr, mvg, mvb;
-  for (short y = 0; y < (height < 200 ? height : 200); y++) {
-    for (short x = 0; x < (width < 320 ? width : 320); x++) {
-      getImagePixel(&p, x, y);
+    short index_color;
+    float map_value;
+    short percent, last_percent;
+    uint8_t r, g, b;
+    float v, w;
+    Pixel p, q;
+    uint8_t c;
+    short n = matrix_size[0] * matrix_size[1];
+    short mv, mvr, mvg, mvb;
+    for (short y = 0; y < (height < 200 ? height : 200); y++) {
+        for (short x = 0; x < (width < 320 ? width : 320); x++) {
+            getImagePixel(&p, x, y);
 
-      mv = matrix[((y % matrix_size[1]) * matrix_size[0]) +
-                  (x % matrix_size[0])];
-      mvr = mv * threshold[0];
-      mvr /= n;
-      mvg = mv * threshold[1];
-      mvg /= n;
-      mvb = mv * threshold[2];
-      mvb /= n;
+            mv = matrix[((y % matrix_size[1]) * matrix_size[0]) +
+                        (x % matrix_size[0])];
+            mvr = mv * threshold[0];
+            mvr /= n;
+            mvg = mv * threshold[1];
+            mvg /= n;
+            mvb = mv * threshold[2];
+            mvb /= n;
 
-      q.r = max(min(p.r + mvr, 255), 0);
-      q.g = max(min(p.g + mvg, 255), 0);
-      q.b = max(min(p.b + mvb, 255), 0);
+            q.r = max(min(p.r + mvr, 255), 0);
+            q.g = max(min(p.g + mvg, 255), 0);
+            q.b = max(min(p.b + mvb, 255), 0);
 
-      q.ra = (q.r * 7) / 255;
-      q.ga = (q.g * 7) / 255;
-      q.ba = (q.b * 7) / 255;
-      c = paletteCache[q.ra][q.ga][q.ba];
-      /* findNearestColor(&q, &c); */
-      /* if (x < 320 && y < 200) */
-      putPixel(x, y, c);
+            q.ra = (q.r * 7) / 255;
+            q.ga = (q.g * 7) / 255;
+            q.ba = (q.b * 7) / 255;
+            c = paletteCache[q.ra][q.ga][q.ba];
+            /* findNearestColor(&q, &c); */
+            /* if (x < 320 && y < 200) */
+            putPixel(x, y, c);
+        }
     }
-  }
 }
 
 void initialize_screen() {
-  currentRes = Getrez();
-  Setscreen(Logbase(), Physbase(), LOW_RES);
+    currentRes = Getrez();
+    Setscreen(Logbase(), Physbase(), LOW_RES);
 }
 
 /* used to test math lib */
@@ -357,58 +358,58 @@ void initialize_screen() {
 /* } */
 
 int main(int argc, char **argv) {
-  initialize_screen();
-  savePalette();
+    initialize_screen();
+    savePalette();
 
-  /* Test math lib */
-  /* draw_log_base_graph(); */
+    /* Test math lib */
+    /* draw_log_base_graph(); */
 
-  /* convertToAtariPalette(dawnbringer); */
-  /* Setpalette(atariPalette); */
+    /* convertToAtariPalette(dawnbringer); */
+    /* Setpalette(atariPalette); */
 
-  /* preparePaletteCache(); */
+    /* preparePaletteCache(); */
 
-  printf("Loading image\n");
-  /* start = Tgettime(); */
-  /* pImage = stbi_load("wheel.png", &width, &height, &comps, 3); */
-  pImage = stbi_load(argc > 1 ? argv[1] : "", &width, &height, &comps, 3);
-  /* end = Tgettime(); */
-  /* getTime("Loading"); */
+    printf("Loading image\n");
+    /* start = Tgettime(); */
+    /* pImage = stbi_load("wheel.png", &width, &height, &comps, 3); */
+    pImage = stbi_load(argc > 1 ? argv[1] : "", &width, &height, &comps, 3);
+    /* end = Tgettime(); */
+    /* getTime("Loading"); */
 
-  if (!pImage) {
-    printf("Error on loading image !\n");
+    if (!pImage) {
+        printf("Error on loading image !\n");
+        getchar();
+        restorePalette();
+        Setscreen(Logbase(), Physbase(), currentRes);
+        return 0;
+    }
+
+    printf("Search for optimal palette\n");
+    guess_palette_wu(pImage, width, height, comps, palette, 16);
+    convertToAtariPalette(palette);
+    Setpalette(atariPalette);
+    preparePaletteCache();
+
+    printf("Displaying image %p\n", pImage);
+
+    /* float version */
+    /* float *matrix = (float *) malloc (sizeof (float) * BAYER_2_2_SIZE[0] *
+     * BAYER_2_2_SIZE[1]); */
+    /* get_precalculated_matrix(BAYER_2_2, BAYER_2_2_SIZE, matrix); */
+    /* free(matrix); */
+
+    /* start = Tgettime(); */
+    ordered_dither(BAYER_2_2, BAYER_2_2_SIZE);
+    /* ordered_dither(BAYER_4_4, BAYER_4_4_SIZE); */
+    /* ordered_dither(BAYER_8_8, BAYER_8_8_SIZE); */
+    /* end = Tgettime(); */
+    /* getTime("Dithering"); */
+
+    /* Cnecin(); */
     getchar();
     restorePalette();
     Setscreen(Logbase(), Physbase(), currentRes);
+    stbi_image_free(pImage);
+
     return 0;
-  }
-
-  printf("Search for optimal palette\n");
-  guess_palette_wu(pImage, width, height, comps, palette, 16);
-  convertToAtariPalette(palette);
-  Setpalette(atariPalette);
-  preparePaletteCache();
-
-  printf("Displaying image %p\n", pImage);
-
-  /* float version */
-  /* float *matrix = (float *) malloc (sizeof (float) * BAYER_2_2_SIZE[0] *
-   * BAYER_2_2_SIZE[1]); */
-  /* get_precalculated_matrix(BAYER_2_2, BAYER_2_2_SIZE, matrix); */
-  /* free(matrix); */
-
-  /* start = Tgettime(); */
-  ordered_dither(BAYER_2_2, BAYER_2_2_SIZE);
-  /* ordered_dither(BAYER_4_4, BAYER_4_4_SIZE); */
-  /* ordered_dither(BAYER_8_8, BAYER_8_8_SIZE); */
-  /* end = Tgettime(); */
-  /* getTime("Dithering"); */
-
-  /* Cnecin(); */
-  getchar();
-  restorePalette();
-  Setscreen(Logbase(), Physbase(), currentRes);
-  stbi_image_free(pImage);
-
-  return 0;
 }
